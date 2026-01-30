@@ -1,0 +1,325 @@
+{
+  "name": "AI-Powered Job Matcher",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        976,
+        0
+      ],
+      "id": "e87aa8ef-7716-4da7-bda5-05516599f5b9",
+      "name": "Simple Vector Store",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an information-extraction engine.\n\nYour task is to analyze raw CV text and extract structured data only from the content provided.\nDo not infer, guess, or add information that is not explicitly present in the CV.\n\nInput\n\nPlain text CV content (already extracted from PDF/DOC).\n\nOutput rules\n\nOutput valid JSON only\n\nNo explanations\n\nNo markdown\n\nNo extra text\n\nUse null if a field is missing\n\nDeduplicate skills\n\nKeep original wording when possible\n\nExtract the following structure:\n{\n  \"skills\": {\n    \"technical\": [],\n    \"soft\": []\n  },\n  \"experience_level\": \"\",\n  \"job_titles\": [],\n  \"location\": {\n    \"country\": \"\",\n    \"city\": \"\"\n  }\n}\n\nField rules\n\ntechnical skills: tools, languages, frameworks, platforms, methods\n\nsoft skills: communication, teamwork, leadership, etc.\n\nexperience_level: one of\nIntern, Junior, Mid-level, Senior, Lead, or Unknown\n\njob_titles: roles explicitly mentioned in experience or profile sections\n\nlocation: extract from address or contact section only\n\nIf the CV text is empty or invalid, return all fields as null.",
+              "role": "model"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "29f1bf0d-0f0c-4757-9669-c76215892cc9",
+      "name": "Extract structured data",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sE9CcohDEzXyCBNW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "02866887-e084-4e75-b679-32d4b791e5cf",
+      "name": "Extract text from CV"
+    },
+    {
+      "parameters": {
+        "formTitle": "upload resume",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "upload your resume",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf"
+            },
+            {
+              "fieldLabel": "add your email for notifications",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4c028135-e4e7-4695-87ef-a50e9e9e1943",
+      "name": "Upload CV and Email ",
+      "webhookId": "9b89959a-ece8-4959-8a5a-69d215013aa9"
+    },
+    {
+      "parameters": {
+        "type": "SHA256"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "d9684c73-7851-41cf-9cd9-ef639e04c61d",
+      "name": "Hash CV",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Workflow 1: CV Upload & Analysis",
+        "height": 304,
+        "width": 1408
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "1ac47989-f6bd-423a-bc5f-b579bb3438b2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Workflow B — Job Source Harvesting (Scheduled)",
+        "height": 976,
+        "width": 1696
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        304
+      ],
+      "typeVersion": 1,
+      "id": "c0fd5de0-4a8b-4d42-bc57-addbcb5eac18",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        688
+      ],
+      "id": "db2aa124-8924-4699-b604-cf0dd91adcb8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.linkedin.com/jobs/search/?keywords={job-title}&location={country-location}&sortBy=DD&f_TPR=r604800",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        192,
+        384
+      ],
+      "id": "ec8442a8-712a-4b28-9cfc-849165785464",
+      "name": "LinkedIn Jobs Scraper"
+    },
+    {
+      "parameters": {
+        "url": "https://www.flexjobs.com/remote-jobs/{job-title}?joblocations={country-location}&sortbyposteddate=true&page=1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        176,
+        576
+      ],
+      "id": "edded35e-201b-4c96-be28-89cdcaf5a7a4",
+      "name": "FlexJobs Jobs Scraper"
+    },
+    {
+      "parameters": {
+        "url": "https://www.google.com/search?q={job-title}+jobs+in+{country-location}&udm=8&jbr=sep:0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        768
+      ],
+      "id": "c758990d-f154-4f62-ab7c-dcb23af0740a",
+      "name": "Google Jobs Scraper",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://wellfound.com/role/r/{job-title}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        960
+      ],
+      "id": "8cc81a64-9b62-4b8d-b2ac-3d81a3d7323c",
+      "name": "Wellfound Jobs Scraper"
+    },
+    {
+      "parameters": {
+        "url": "https://www.indeed.com/jobs?q={job-title}&l=Remote&fromage=1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        176,
+        1120
+      ],
+      "id": "ebbaded9-d872-4b0c-86f1-7fd40f180f46",
+      "name": "Indeed Jobs Scraper"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract structured data": {
+      "main": [
+        [
+          {
+            "node": "Hash CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract text from CV": {
+      "main": [
+        [
+          {
+            "node": "Extract structured data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload CV and Email ": {
+      "main": [
+        [
+          {
+            "node": "Extract text from CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash CV": {
+      "main": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Jobs Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "FlexJobs Jobs Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Jobs Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wellfound Jobs Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Indeed Jobs Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "20968966-e9e7-4474-95d4-a0c934547d61",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2bfd896d087e286eea6bee9034b83433793191c4dc58161d8317f4a21df0f1d7"
+  },
+  "id": "f7YXyThVTKScl5U_57AMm",
+  "tags": []
+}
