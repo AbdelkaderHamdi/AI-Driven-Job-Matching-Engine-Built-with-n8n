@@ -57,7 +57,7 @@ Automatically searches:
        │
        ▼
 ┌─────────────────┐
-│  Claude AI      │
+│  Gemini AI      │
 │  CV Analysis    │
 └──────┬──────────┘
        │
@@ -87,7 +87,7 @@ Automatically searches:
 ### Prerequisites
 - n8n (self-hosted or cloud)
 - Supabase account
-- Anthropic API key (Claude)
+- Gemini API key (Google)
 - OpenAI API key (embeddings)
 - Optional: SerpAPI, RapidAPI
 
@@ -95,8 +95,8 @@ Automatically searches:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/ai-job-matcher.git
-cd ai-job-matcher
+git clone https://github.com/AbdelkderHamdi/AI-Driven-Job-Matching-Engine-Built-with-n8n.git
+cd AI-Driven-Job-Matching-Engine-Built-with-n8n
 ```
 
 2. **Import n8n workflows**
@@ -112,7 +112,7 @@ create extension vector;
 ```
 
 4. **Configure credentials in n8n**
-- Anthropic API (Claude)
+- Gemini API (Google)
 - OpenAI API
 - Supabase connection
 - Email service (Gmail/SendGrid)
@@ -120,7 +120,7 @@ create extension vector;
 
 5. **Set environment variables**
 ```env
-CLAUDE_API_KEY=your_key
+Gemini_API_KEY=your_key
 OPENAI_API_KEY=your_key
 SUPABASE_URL=your_url
 SUPABASE_KEY=your_key
@@ -134,26 +134,6 @@ SUPABASE_KEY=your_key
 
 ---
 
-## 📁 Project Structure
-```
-ai-job-matcher/
-├── workflows/
-│   ├── 01-cv-upload.json
-│   ├── 02-job-scraper.json
-│   ├── 03-matching-engine.json
-│   └── 04-cv-update.json
-├── database/
-│   └── schema.sql
-├── scripts/
-│   ├── cv-parser.js
-│   └── matching-algorithm.js
-├── docs/
-│   ├── architecture.md
-│   └── api-reference.md
-└── README.md
-```
-
----
 
 ## 🛠️ Tech Stack
 
